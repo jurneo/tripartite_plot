@@ -6,17 +6,10 @@
 
 class MainWindow : public QWidget
 {
-    Q_OBJECT
-    
+    Q_OBJECT    
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-protected:
-    void resizeEvent(QResizeEvent *);
-
-public slots:
-    void plotgraph();
 };
 
 #endif // MAINWINDOW_H

@@ -26,23 +26,28 @@ public:
     PrivateImpl()
         : s1(0.0), s2(0.0), t2(0.0)
         , angle(-45.0)
-        , isInch(false)
-        , useG(false)
+        , unit(cvgk::cm)
+        , useG(true)
     {
         xd.setTransformation(new QwtScaleTransformation(QwtScaleTransformation::Log10));
         yd.setTransformation(new QwtScaleTransformation(QwtScaleTransformation::Log10));
         yd.setAlignment(QwtScaleDraw::RightScale);
+        dispText = "Disp. (cm)";
+        accelText = "Accel. (g)";
     }
 
     double s1;
     double s2;
     double t2;
-    double angle;
-    bool isInch;
+    double angle;    
     bool useG;
+
+    cvgk::Unit unit;
 
     QwtScaleDraw xd;
     QwtScaleDraw yd;
+    QString dispText;
+    QString accelText;
 };
 
 TripartiteGrid::TripartiteGrid() :
@@ -91,7 +96,6 @@ void TripartiteGrid::drawLines( QPainter *painter, const QRectF &canvasRect,
         }
     }
 }
-
 
 /*!
   \brief Draw the grid
@@ -164,7 +168,7 @@ void TripartiteGrid::draw( QPainter *painter,
     painter->translate(100,0);
     QPen blackPen(Qt::black);
     painter->setPen(blackPen);
-    painter->drawText(0, -15, "Disp. (m)");
+    painter->drawText(0, -15, m_impl->dispText);
     painter->restore();
 
     painter->save();
@@ -175,7 +179,7 @@ void TripartiteGrid::draw( QPainter *painter,
     painter->translate(-30, 100);
     painter->rotate(90);
     painter->setPen(blackPen);
-    painter->drawText(0, -15, "Accel. (g)");
+    painter->drawText(0, -15, m_impl->accelText);
     painter->restore();
 
     painter->setPen(oldPen);
@@ -229,7 +233,19 @@ void TripartiteGrid::updateRange() const
     double factor = 1;
     if (m_impl->useG)
     {
-        factor = m_impl->isInch ? INCH2G : G;
+        switch(m_impl->unit)
+        {
+        case cvgk::m:
+            factor = (1.0/G);
+            break;
+        case cvgk::inch:
+            factor = INCH2G;
+            break;
+        default:
+        case cvgk::cm:
+            factor = (1.0/G/100.0);
+            break;
+        }
     }
     d1 = yScaleDiv->interval().minValue() * (2*M_PI) / s2 * factor;
     d2 = m_impl->t2 *  (2*M_PI) / xScaleDiv->interval().minValue() * factor;
@@ -246,12 +262,19 @@ void TripartiteGrid::updateScaleDiv(const QwtScaleDiv &xMap, const QwtScaleDiv &
     updateRange();
 }
 
-void TripartiteGrid::setUseG(bool flag)
+void TripartiteGrid::setUnit(cvgk::Unit unit)
 {
-    m_impl->isInch = flag;
+    m_impl->unit = unit;
+
+    updateRange();
 }
 
-void TripartiteGrid::setUseInch(bool flag)
+void TripartiteGrid::setDisplacementText(QString text)
 {
-    m_impl->useG = flag;
+    m_impl->dispText = text;
+}
+
+void TripartiteGrid::setAccelerationText(QString text)
+{
+    m_impl->accelText = text;
 }

@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       += core gui
-CONFIG += console
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,10 +20,12 @@ Release:LIBS += -L./lib -lqwt
 SOURCES += main.cpp\
     mainwindow.cpp \
     tripartitegrid.cpp \
-    reader.cpp
+    reader.cpp \
+    plotwidget.cpp
 
 HEADERS  += mainwindow.h \
     tripartitegrid.h \
-    reader.h
+    reader.h \
+    plotwidget.h
 
 INCLUDEPATH += ./src

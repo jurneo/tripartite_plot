@@ -4,6 +4,10 @@
 #include <qwt_plot_grid.h>
 #include <qwt_scale_map.h>
 
+namespace cvgk {
+    enum Unit { m, cm, inch };
+}
+
 class TripartiteGrid : public QwtPlotGrid
 {
 public:
@@ -21,8 +25,10 @@ public:
 
     virtual void updateScaleDiv(const QwtScaleDiv &xMap, const QwtScaleDiv &yMap );
 
-    void setUseG(bool flag);
-    void setUseInch(bool flag);
+    void setUnit(cvgk::Unit unit);
+    void setDisplacementText(QString text);
+    void setAccelerationText(QString text);
+
     void updateRange() const;
 
 private:
