@@ -12,8 +12,6 @@ ui_*.*
 *.lib
 *ake*ile*
 *.ilk
-*.exe
-*.dll
 *.exp
 *.bak
 *.slv
