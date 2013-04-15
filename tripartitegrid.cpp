@@ -26,13 +26,13 @@ public:
     PrivateImpl()
         : s1(0.0), s2(0.0), t2(0.0)
         , angle(-45.0)
-        , unit(cvgk::cm)
+        , unit(cvgk::m)
         , useG(true)
     {
         xd.setTransformation(new QwtScaleTransformation(QwtScaleTransformation::Log10));
         yd.setTransformation(new QwtScaleTransformation(QwtScaleTransformation::Log10));
         yd.setAlignment(QwtScaleDraw::RightScale);
-        dispText = "Disp. (cm)";
+        dispText = "Disp. (m)";
         accelText = "Accel. (g)";
     }
 
@@ -117,22 +117,41 @@ void TripartiteGrid::draw( QPainter *painter,
     QPen minPen = this->minPen();
     minPen.setCapStyle( Qt::FlatCap );
 
+    auto xpos = xScaleDiv().interval().minValue();
+    auto ypos = yScaleDiv().interval().minValue();
+
     painter->setPen( minPen );
+
+    auto cv = canvasRect;
+    const double x1 = canvasRect.left() - 1000;
+    const double x2 = canvasRect.right() + 1000;
+    const double y1 = canvasRect.top() - 1000;
+    const double y2 = canvasRect.bottom() + 1000;
+    cv.setTopLeft(QPointF(x1, y1));
+    cv.setBottomRight(QPointF(x2,y2));
 
     if ( xEnabled() && xMinEnabled() )
     {
-        drawLines( painter, canvasRect, Qt::Vertical, xMap,
-            xScaleDiv().ticks( QwtScaleDiv::MinorTick ) );
-        drawLines( painter, canvasRect, Qt::Vertical, xMap,
-            xScaleDiv().ticks( QwtScaleDiv::MediumTick ) );
+        painter->save();
+        painter->translate(xMap.transform(m_impl->s1), yMap.transform(ypos));
+        painter->rotate(m_impl->angle);
+        drawLines( painter, cv, Qt::Vertical, m_impl->xd.scaleMap(),
+            m_impl->xd.scaleDiv().ticks( QwtScaleDiv::MinorTick ) );
+        drawLines( painter, cv, Qt::Vertical, m_impl->xd.scaleMap(),
+            m_impl->xd.scaleDiv().ticks( QwtScaleDiv::MediumTick ) );
+        painter->restore();
     }
 
     if ( yEnabled() && yMinEnabled() )
     {
-        drawLines( painter, canvasRect, Qt::Horizontal, yMap,
-            yScaleDiv().ticks( QwtScaleDiv::MinorTick ) );
-        drawLines( painter, canvasRect, Qt::Horizontal, yMap,
-            yScaleDiv().ticks( QwtScaleDiv::MediumTick ) );
+        painter->save();
+        painter->translate(xMap.transform(xpos), yMap.transform(m_impl->t2));
+        painter->rotate(m_impl->angle);
+        drawLines( painter, cv, Qt::Horizontal, m_impl->yd.scaleMap(),
+            m_impl->yd.scaleDiv().ticks( QwtScaleDiv::MinorTick ) );
+        drawLines( painter, cv, Qt::Horizontal, m_impl->yd.scaleMap(),
+            m_impl->yd.scaleDiv().ticks( QwtScaleDiv::MediumTick ) );
+        painter->restore();
     }
 
     //  draw major gridlines
@@ -143,18 +162,23 @@ void TripartiteGrid::draw( QPainter *painter,
 
     if ( xEnabled() )
     {
-        drawLines( painter, canvasRect, Qt::Vertical, xMap,
-            xScaleDiv().ticks( QwtScaleDiv::MajorTick ) );
+        painter->save();
+        painter->translate(xMap.transform(m_impl->s1), yMap.transform(ypos));
+        painter->rotate(m_impl->angle);
+        drawLines( painter, cv, Qt::Vertical, m_impl->xd.scaleMap(),
+            m_impl->xd.scaleDiv().ticks( QwtScaleDiv::MajorTick ) );
+        painter->restore();
     }
 
     if ( yEnabled() )
     {
-        drawLines( painter, canvasRect, Qt::Horizontal, yMap,
-            yScaleDiv().ticks( QwtScaleDiv::MajorTick ) );
+        painter->save();
+        painter->translate(xMap.transform(xpos), yMap.transform(m_impl->t2));
+        painter->rotate(m_impl->angle);
+        drawLines( painter, cv, Qt::Horizontal, m_impl->yd.scaleMap(),
+            m_impl->yd.scaleDiv().ticks( QwtScaleDiv::MajorTick ) );
+        painter->restore();
     }
-
-    auto xpos = xScaleDiv().interval().minValue();
-    auto ypos = yScaleDiv().interval().minValue();
 
     QPen pn(Qt::gray, 0, Qt::SolidLine);
     QPalette pl(pn.color());

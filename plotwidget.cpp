@@ -72,9 +72,9 @@ PlotWidget::PlotWidget(QWidget *parent) :
     plot->setAxisScale(QwtPlot::yLeft, ym1, ym2);
 
     setting.beginGroup("axis-text");
-    QString veloText = setting.value("veloText", "V (cm/s)").toString();
+    QString veloText = setting.value("veloText", "V (m/s)").toString();
     QString timeText = setting.value("timeText", "Tn (s)").toString();
-    QString dispText = setting.value("dispText", "Disp. (cm)").toString();
+    QString dispText = setting.value("dispText", "Disp. (m)").toString();
     QString accelText = setting.value("accelText", "Accel. (g)").toString();
     setting.endGroup();
 
@@ -100,14 +100,15 @@ PlotWidget::PlotWidget(QWidget *parent) :
     grid2->attach(plot);
     gGrid = grid2;
     grid2->enableXMin(true);
+    grid2->enableYMin(true);
     grid2->setXAxisPos(xpos1, xpos2);
-    grid2->setMajPen(QPen(Qt::gray, 0, Qt::SolidLine));
-    grid2->setMinPen(QPen(Qt::gray, 0 , Qt::SolidLine));
+    grid2->setMajPen(QPen(Qt::gray, 0, Qt::DotLine));
+    grid2->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     grid2->setDisplacementText(dispText);
     grid2->setAccelerationText(accelText);
 
     setting.beginGroup("unit");
-    QString unit = setting.value("unit","cm").toString();
+    QString unit = setting.value("unit","m").toString();
     setting.endGroup();
     unit = unit.toLower();
     if (unit == "inch")

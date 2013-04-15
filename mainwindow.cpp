@@ -6,7 +6,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent)
 {
     auto* v = new QVBoxLayout(this);
-    QLabel* label = new QLabel(tr("2010 Chile Earthquake Response Spectrum"));
+
+    QSettings setting("setting.ini", QSettings::IniFormat);
+    setting.beginGroup("title");
+    QString title = setting.value("title","2010 Chile Earthquake Response Spectrum").toString();
+    setting.endGroup();
+
+    QLabel* label = new QLabel(title);
     label->setAlignment(Qt::AlignCenter);
 
     setStyleSheet("background-color : white");
@@ -21,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent) :
     v->setSpacing(20);
 
     setWindowTitle("CV6103 - GFM & KA");
+
+    setting.beginGroup("title");
+    setting.setValue("title", title);
+    setting.endGroup();
 }
 
 MainWindow::~MainWindow()
