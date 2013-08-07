@@ -1,7 +1,7 @@
 tripartite_plot
 ===============
 
-tripartite seismic plot
+seismic tripartite plot
 
 License
 =======
