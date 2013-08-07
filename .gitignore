@@ -9,7 +9,6 @@ debug
 ui_*.*
 *.py
 *.suo
-*.lib
 *ake*ile*
 *.ilk
 *.exp
